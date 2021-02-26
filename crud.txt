@@ -1,0 +1,79 @@
+import { bd } from './mariadb.ts';
+let crud
+
+do{
+    console.log("-------------------Menu----------------------")
+    console.log("1. Crear un usuario");
+    console.log("2. Actualizar un usuario");
+    console.log("3. Listar usuarios");
+    console.log("4. Eliminar usuario");
+    console.log("5. Salir");
+    crud = parseInt(prompt("Seleccione una opción") as string);
+    console.log("----------------------------------------------")
+    switch (crud){
+        // Registrar usuarios
+        case 1:{
+            console.log("Registro de usuarios")
+            let nombre = prompt("Ingrese su nombre: ") as string;
+            let apellido = prompt("Ingrese su apellido: ") as string;
+            let telefono = prompt("Ingrese su numero de telefono: ") as string;
+            let correo = prompt  ("Ingrese su correo: ") as string;
+            let contraseña = prompt("Digite su contraseña: ") as string;
+
+            if (nombre.length > 3 && apellido.length > 3 && telefono.length == 10 && contraseña.length >= 8) {
+                console.log("Resgistro guardado")
+                let registros = await bd.execute(`INSERT INTO registros (nombre,apellido,telefono,correo,contraseña) values (?,?,?,?,?)`, [
+                    nombre,
+                    apellido,
+                    telefono,
+                    correo,
+                    contraseña,
+                ]);
+            console.log(registros)
+        }else{
+            console.log("Porfavor llenar el formulario correctamente")
+            }
+        }
+        break;
+
+        //Actualizar usuario
+        case 2 :{
+
+            let registros = await bd.query(`select * from register`);
+            console.log(registros);
+            let id = prompt("Seleccione el ID que desea actualizar") as string;
+            let nombre = prompt("Ingrese su nombre") as string;
+            let apellido = prompt("Ingrese su apellido") as string;
+            let telefono = prompt("Ingrese su celular") as string;
+            let correo = prompt("Ingrese su correo") as string;
+            let contraseña = prompt("Ingrese una contraseña") as string;
+            let update = await bd.execute(`update registros set nombre = ?,apellido = ?,telefono = ?,correo = ?,contraseña = ? WHERE id = ?`, [
+                nombre,
+                apellido,
+                telefono,
+                correo,
+                contraseña,
+                id,
+            ]);
+            console.log(update);
+            break;
+        }
+        //LISTAR
+        case 3 :{
+            let registros = await bd.query(`select * from registros`);
+            console.log(registros);
+            break;
+        }
+        case 4 :{
+            let registros = await bd.query(`select * from register`);
+            console.log(registros);
+            let id = prompt("Seleccione el ID que desea eliminar") as string;
+            let select = await bd.execute(`delete from registros where id = ?`, [id])
+            console.log("Registro eliminado: ", select)
+            break;
+        }
+        case 5 : {
+            break;
+        }
+    }
+}while (crud !=5)
